@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frame.admin.mapper.OmEmpTMapper" >
+  <resultMap id="BaseResultMap" type="com.frame.admin.model.OmEmpT" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="loginname" property="loginname" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="TINYINT" />
+    <result column="age" property="age" jdbcType="TINYINT" />
+    <result column="usertype" property="usertype" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="strStatus" property="strStatus" jdbcType="VARCHAR" />
+    <result column="strUsertype" property="strUsertype" jdbcType="VARCHAR" />
+    <result column="strCreatedate" property="strCreatedate" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, loginname, username, password, sex, age, usertype, status, createdate, phone
+  </sql>
+  
+  <!-- 用户查询列表 -->
+  <sql id="sql_user_where">
+      <if test=" loginName !=null and loginName !=''">
+          and  t.loginname = #{loginName}
+       </if>
+       <if test=" userName !=null and userName !=''">
+          and  t.username = #{userName}
+       </if>
+  </sql>
+  
+  <!-- 获取用户列表集合 -->
+  <select id="selectUserList" resultMap="BaseResultMap"  parameterType="com.frame.admin.model.vo.OmEmpTVo">
+       SELECT
+		<include refid="Base_Column_List"/>
+		,CASE  
+		   t.status
+		   when 1  then '有效'
+		   when 0  then '无效'
+		end  strStatus
+		,CASE  
+		   t.usertype
+		   when 1  then '管理员'
+		   when 0  then '普通用户'
+		end  strUsertype 
+		,DATE_FORMAT(t.createdate,'yyyy-MM-dd')  strCreatedate
+		from om_emp_t t  
+		where 1=1 
+		<include refid="sql_user_where"/>
+		LIMIT #{pageStart} ,#{pageSize}
+  
+  </select>
+  
+  <!-- 获取用户列表总记录数 -->
+   <select id="selectUserTotal" resultType="java.lang.Integer"  parameterType="com.frame.admin.model.vo.OmEmpTVo">
+	   SELECT
+			count(1)
+			from om_emp_t t
+			where 1=1 
+			<include refid="sql_user_where"/>
+  
+  </select>
+  
+  
+   <!-- 获取用户列表总记录数 -->
+   <select id="selectUserCount" resultType="java.lang.Integer"  parameterType="com.frame.admin.model.OmEmpT">
+	   SELECT
+			count(1)
+			from om_emp_t t
+			where  t.loginname = #{username}
+			  and  t.password=  #{password}
+  
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from om_emp_t
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from om_emp_t
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  
+  <insert id="insert" parameterType="com.frame.admin.model.OmEmpT" >
+    insert into om_emp_t (id, loginname, username, 
+      password, sex, age, 
+      usertype, status, createdate, 
+      phone)
+    values (#{id,jdbcType=BIGINT}, #{loginname,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT}, #{age,jdbcType=TINYINT}, 
+      #{usertype,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{createdate,jdbcType=TIMESTAMP}, 
+      #{phone,jdbcType=VARCHAR})
+  </insert>
+
+  
+  <update id="updateByPrimaryKey" parameterType="com.frame.admin.model.OmEmpT" >
+    update om_emp_t
+    set loginname = #{loginname,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=TINYINT},
+      age = #{age,jdbcType=TINYINT},
+      usertype = #{usertype,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      createdate = #{createdate,jdbcType=TIMESTAMP},
+      phone = #{phone,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

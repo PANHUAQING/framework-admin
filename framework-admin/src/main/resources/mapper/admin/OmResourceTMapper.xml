@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frame.admin.mapper.OmResourceTMapper" >
+  <resultMap id="BaseResultMap" type="com.frame.admin.model.OmResourceT" >
+    <id column="resource_id" property="resourceId" jdbcType="VARCHAR" />
+    <result column="resource_name" property="resourceName" jdbcType="VARCHAR" />
+    <result column="resource_url" property="resourceUrl" jdbcType="VARCHAR" />
+    <result column="resource_pid" property="resourcePid" jdbcType="VARCHAR" />
+    <result column="resource_pname" property="resourcePname" jdbcType="VARCHAR" />
+    <result column="resource_type" property="resourceType" jdbcType="TINYINT" />
+    <result column="resource_status" property="resourceStatus" jdbcType="TINYINT" />
+    <result column="resource_desc" property="resourceDesc" jdbcType="VARCHAR" />
+    <result column="resource_seq" property="resourceSeq" jdbcType="TINYINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="create_emp" property="createEmp" jdbcType="VARCHAR" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="update_emp" property="updateEmp" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    resource_id, resource_name, resource_url, resource_pid, resource_pname, resource_type, 
+    resource_status, resource_desc, resource_seq, create_date, create_emp, update_date, 
+    update_emp
+  </sql>
+  
+  <!-- 通过父节点获取子节点信息 -->
+  <select id="selectByExampleByParentId" resultMap="BaseResultMap"  parameterType="java.lang.String">
+     select 
+     <include refid="Base_Column_List" />
+     from om_resource_t t
+     where t.resource_status='1' and  t.resource_pid = #{resourceId}
+     order by t.resource_seq  
+  
+  </select>
+  
+   <!-- 判断是否具体下级节点 -->
+  <select id="selectCountByExampleByParentId" resultType="java.lang.Integer"  parameterType="java.lang.String">
+     select 
+     count(1)
+     from om_resource_t t
+     
+     where t.resource_status='1' and t.resource_pid = #{resourceId}
+  </select>
+  
+  <!-- 查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from om_resource_t
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </select>
+
+<!-- 删除资源 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from om_resource_t
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 保存数据  -->
+  <insert id="insert" parameterType="com.frame.admin.model.OmResourceT" >
+    insert into om_resource_t (resource_id, resource_name, resource_url, 
+      resource_pid, resource_pname, resource_type, 
+      resource_status, resource_desc, resource_seq, 
+      create_date, create_emp, update_date, 
+      update_emp)
+    values (#{resourceId,jdbcType=VARCHAR}, #{resourceName,jdbcType=VARCHAR}, #{resourceUrl,jdbcType=VARCHAR}, 
+      #{resourcePid,jdbcType=VARCHAR}, #{resourcePname,jdbcType=VARCHAR}, 1, 
+      1, #{resourceDesc,jdbcType=VARCHAR}, #{resourceSeq,jdbcType=TINYINT}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{createEmp,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updateEmp,jdbcType=VARCHAR})
+  </insert>
+
+   <!-- 更新数据  -->
+   <update id="updateByPrimaryKey" parameterType="com.frame.admin.model.OmResourceT" >
+    update om_resource_t
+    set 
+      resource_name = #{resourceName,jdbcType=VARCHAR},
+      resource_url = #{resourceUrl,jdbcType=VARCHAR},
+      resource_status = #{resourceStatus,jdbcType=TINYINT},
+      resource_desc = #{resourceDesc,jdbcType=VARCHAR},
+      resource_seq = #{resourceSeq,jdbcType=TINYINT},
+      update_date = SYSDATE(),
+      update_emp = 'admin'
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </update>
+  
+   <!-- 更新为无效 删除  -->
+  <update id="updateResourceById" parameterType="java.lang.String" >
+    update om_resource_t
+    set 
+      resource_status = '0'
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

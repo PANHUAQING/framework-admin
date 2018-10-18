@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frame.admin.mapper.OmRoleTMapper" >
+  <resultMap id="BaseResultMap" type="com.frame.admin.model.OmRoleT" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="seq" property="seq" jdbcType="TINYINT" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="strStatus" property="strStatus" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    ID, name, seq, description, status
+  </sql>
+  
+  <!-- 条件判断  -->
+  <sql id="sql_role_where">
+       <if test=" roleName !=null and roleName !=''">
+          and  t.name = #{roleName}
+       </if>
+       <if test=" roleStatus !=null and roleStatus !=''">
+           and  t.status = #{roleStatus}
+       </if>
+  </sql>
+  
+  <!-- 查询角色列表 -->
+  <select id="selectRoleList" parameterType="com.frame.admin.model.vo.OmRoleTVo"  resultType="com.frame.admin.model.OmRoleT">
+       SELECT
+		<include refid="Base_Column_List"/>
+		,CASE  
+		   t.STATUS
+		   when 1  then '有效'
+		   when 0  then '无效'
+		end  strStatus
+		 
+		from om_role_t t  
+		where 1=1 
+		<include refid="sql_role_where"/>
+		order by t.seq 
+		LIMIT #{pageStart} ,#{pageSize}
+		
+  </select>
+  
+  <!-- 查询角色列表总数 -->
+  <select id="selectRoleTotal" parameterType="com.frame.admin.model.vo.OmRoleTVo"  resultType="java.lang.Integer">
+       SELECT
+		count(1)
+		from om_role_t t
+		where 1=1 
+		<include refid="sql_role_where"/>
+  </select>
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from om_role_t
+    where ID = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  
+  
+  
+  <insert id="insert" parameterType="com.frame.admin.model.OmRoleT" >
+    insert into om_role_t (ID, name, seq, 
+      description, status)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{seq,jdbcType=TINYINT}, 
+      #{description,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+  </insert>
+  
+  <!-- 校验角色名称是否重复 -->
+  <select id="selectRoleByName" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select 
+    count(1)
+    from om_role_t
+    where name = #{name}
+  </select>
+ 
+  <update id="updateByPrimaryKey" parameterType="com.frame.admin.model.OmRoleT" >
+    update om_role_t
+    set name = #{name,jdbcType=VARCHAR},
+      seq = #{seq,jdbcType=TINYINT},
+      description = #{description,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>
